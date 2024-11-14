@@ -9,7 +9,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Fish News App Home'),
+        title: const Text('Fish News App'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
