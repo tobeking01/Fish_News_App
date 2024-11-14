@@ -6,7 +6,6 @@ Fish News App is a Flutter-based mobile application designed to provide real-tim
 
 - **Global Fishing Activity**: Real-time data on fishing vessel activities.
 - **Event Tracking**: Information on significant fishing events.
-- **Insights and Analysis**: Insightful data visualizations and trends.
 - **Multi-Platform Support**: Runs on both Android and iOS devices.
 
 ## Architecture
