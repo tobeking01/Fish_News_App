@@ -1,0 +1,19 @@
+# This file configures the analyzer, which statically analyzes Dart code to
+# check for errors, warnings, and lints.
+
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    # Enforces strict typing by discouraging dynamic and unchecked types.
+    always_specify_types: true
+    avoid_dynamic_calls: true
+    # Enables stricter casting checks.
+    avoid_as: true
+    avoid_types_as_parameter_names: true
+
+analyzer:
+  # Enforces strict checking of inferred types and type arguments.
+  strong-mode:
+    implicit-casts: false
+    implicit-dynamic: false
