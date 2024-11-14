@@ -1,3 +1,4 @@
+import 'package:fish_news_app/sqDB/database_helper.dart';
 import 'package:flutter/material.dart';
 import '../repo/vessel_services.dart';
 import '../models/vessel_model.dart';
@@ -6,6 +7,7 @@ import '../repo/api_status.dart';
 
 class VesselViewModel extends ChangeNotifier {
   final VesselServices _vesselServices = VesselServices();
+  final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   // Vessels list
   List<Vessel> _vessels = <Vessel>[];
@@ -34,6 +36,12 @@ class VesselViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+// Clear the vessels list
+  void clearVessels() {
+    _vessels = <Vessel>[];
+    notifyListeners();
+  }
+  
   // Set error
   void setFishingError(FishingError fishingError) {
     _fishingError = fishingError;
@@ -87,14 +95,30 @@ class VesselViewModel extends ChangeNotifier {
       includes: <String>['OWNERSHIP', 'AUTHORIZATIONS', 'MATCH_CRITERIA'],
     );
 
-    if (response is ApiResponse<List<Vessel>> && response.status == ApiStatus.success) {
+     if (response is ApiResponse<List<Vessel>> && response.status == ApiStatus.success) {
       setVessels(response.data ?? <Vessel>[]);
+
+      // Save fetched vessels to the database
+      for (final Vessel vessel in _vessels) {
+        await _databaseHelper.insertVessel(vessel);
+      }
     } else if (response is ApiResponse<String> && response.status == ApiStatus.error) {
-      setFishingError(
-        FishingError(code: 0, message: response.message ?? 'Unknown error'),
-      );
+      setFishingError(FishingError(code: 0, message: response.message ?? 'Unknown error'));
     }
 
     setLoading(false);
+  }
+// Load vessels from the database
+  Future<void> loadVesselsFromDatabase() async {
+    setLoading(true);
+    _vessels = await _databaseHelper.getVessels();
+    setLoading(false);
+    notifyListeners();
+  }
+
+  // Add a vessel to the database
+  Future<void> addVessel(Vessel vessel) async {
+    await _databaseHelper.insertVessel(vessel);
+    await loadVesselsFromDatabase(); // Refresh the list
   }
 }

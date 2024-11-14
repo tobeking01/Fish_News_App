@@ -225,4 +225,32 @@ class Vessel {
         'tonnageGt': tonnage,
         'geartype': gearType,
       };
+
+  // Method to convert a Map to a Vessel object
+  factory Vessel.fromMap(Map<String, dynamic> map) {
+    return Vessel(
+      id: map['id'] as String? ?? '',
+      name: map['name'] as String? ?? '',
+      shipname: map['shipname'] as String? ?? '',
+      flag: map['flag'] as String? ?? 'N/A',
+      callsign: map['callsign'] as String? ?? 'N/A',
+      imo: map['imo'] as String? ?? 'N/A',
+      length: (map['length'] as num?)?.toDouble() ?? 0.0,
+      tonnage: (map['tonnage'] as num?)?.toDouble() ?? 0.0,
+      gearType: map['gearType'] as String? ?? 'Unknown',
+    );
+  }
+
+// Method to convert Vessel object to a Map (for database operations)
+  Map<String, dynamic> toMap() => <String, dynamic>{
+        'id': id,
+        'name': name,
+        'shipname': shipname,
+        'flag': flag,
+        'callsign': callsign,
+        'imo': imo,
+        'length': length,
+        'tonnage': tonnage,
+        'gearType': gearType,
+      };
 }

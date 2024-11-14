@@ -1,5 +1,7 @@
 import 'package:fish_news_app/fishing/models/fishing_event_model.dart';
+import 'package:fish_news_app/fishing/view_models/fishing_event_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FishingEventDetailsScreen extends StatelessWidget {
   final FishingEvent fishingEvent;
@@ -32,9 +34,21 @@ class FishingEventDetailsScreen extends StatelessWidget {
             Text('Distance from Shore: ${fishingEvent.distanceFromShore} km', style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 8),
             Text('Distance from Port: ${fishingEvent.distanceFromPort} km', style: const TextStyle(fontSize: 18)),
+          const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () async {
+                // Add fishing event to the database
+                await context.read<FishingEventViewModel>().addFishingEvent(fishingEvent);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Fishing event added to the database')),
+                  );
+                }
+              },
+              child: const Text('Add to Database'),
+            ),
           ],
         ),
       ),
     );
-  }
-}
+  }}

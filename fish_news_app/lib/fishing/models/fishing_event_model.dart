@@ -31,14 +31,19 @@ class FishingEvent {
   factory FishingEvent.fromJson(Map<String, dynamic> json) {
     String id = json['id'] as String? ?? '';
     String type = json['type'] as String? ?? '';
-    DateTime start = DateTime.tryParse(json['start'] as String? ?? DateTime.now().toIso8601String()) ?? DateTime.now();
-    DateTime end = DateTime.tryParse(json['end'] as String? ?? DateTime.now().toIso8601String()) ?? DateTime.now();
+    DateTime start = DateTime.tryParse(
+            json['start'] as String? ?? DateTime.now().toIso8601String()) ??
+        DateTime.now();
+    DateTime end = DateTime.tryParse(
+            json['end'] as String? ?? DateTime.now().toIso8601String()) ??
+        DateTime.now();
 
     // Handle nested position data
     double latitude = 0.0;
     double longitude = 0.0;
     if (json['position'] != null && json['position'] is Map<String, dynamic>) {
-      final Map<String, dynamic> position = json['position'] as Map<String, dynamic>;
+      final Map<String, dynamic> position =
+          json['position'] as Map<String, dynamic>;
       latitude = (position['lat'] as num?)?.toDouble() ?? 0.0;
       longitude = (position['lon'] as num?)?.toDouble() ?? 0.0;
     }
@@ -46,18 +51,22 @@ class FishingEvent {
     // Handle nested distances data
     double distanceFromShore = 0.0;
     double distanceFromPort = 0.0;
-    if (json['distances'] != null && json['distances'] is Map<String, dynamic>) {
-      final Map<String, dynamic> distances = json['distances'] as Map<String, dynamic>;
-      distanceFromShore = (distances['endDistanceFromShoreKm'] as num?)?.toDouble() ?? 0.0;
-      distanceFromPort = (distances['endDistanceFromPortKm'] as num?)?.toDouble() ?? 0.0;
+    if (json['distances'] != null &&
+        json['distances'] is Map<String, dynamic>) {
+      final Map<String, dynamic> distances =
+          json['distances'] as Map<String, dynamic>;
+      distanceFromShore =
+          (distances['endDistanceFromShoreKm'] as num?)?.toDouble() ?? 0.0;
+      distanceFromPort =
+          (distances['endDistanceFromPortKm'] as num?)?.toDouble() ?? 0.0;
     }
 
     String vesselId = '';
     if (json['vessel'] != null && json['vessel'] is Map<String, dynamic>) {
-      final Map<String, dynamic> vessel = json['vessel'] as Map<String, dynamic>;
+      final Map<String, dynamic> vessel =
+          json['vessel'] as Map<String, dynamic>;
       vesselId = vessel['id'] as String? ?? '';
     }
-
 
     return FishingEvent(
       id: id,
@@ -89,5 +98,33 @@ class FishingEvent {
         'vessel': <String, dynamic>{
           'id': vesselId,
         },
+      };
+
+  // Method to convert a Map to a FishingEvent object
+  factory FishingEvent.fromMap(Map<String, dynamic> map) {
+    return FishingEvent(
+      id: map['id'] as String? ?? '',
+      type: map['type'] as String? ?? '',
+      start: DateTime.tryParse(map['start'] as String? ?? '') ?? DateTime.now(),
+      end: DateTime.tryParse(map['end'] as String? ?? '') ?? DateTime.now(),
+      latitude: (map['latitude'] as num?)?.toDouble() ?? 0.0,
+      longitude: (map['longitude'] as num?)?.toDouble() ?? 0.0,
+      distanceFromShore: (map['distanceFromShore'] as num?)?.toDouble() ?? 0.0,
+      distanceFromPort: (map['distanceFromPort'] as num?)?.toDouble() ?? 0.0,
+      vesselId: map['vesselId'] as String? ?? '',
+    );
+  }
+
+// Method to convert FishingEvent object to a Map (for database operations)
+  Map<String, dynamic> toMap() => <String, dynamic>{
+        'id': id,
+        'type': type,
+        'start': start.toIso8601String(),
+        'end': end.toIso8601String(),
+        'latitude': latitude,
+        'longitude': longitude,
+        'distanceFromShore': distanceFromShore,
+        'distanceFromPort': distanceFromPort,
+        'vesselId': vesselId,
       };
 }

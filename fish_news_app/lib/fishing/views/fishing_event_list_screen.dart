@@ -1,5 +1,3 @@
-// lib/fishing/views/fishing_event_list_screen.dart
-
 import 'package:fish_news_app/components/app_error.dart';
 import 'package:fish_news_app/components/app_loading.dart';
 import 'package:fish_news_app/components/fishing_event_list_row.dart';
@@ -10,45 +8,31 @@ import 'package:fish_news_app/utils/navigation_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class FishingEventListScreen extends StatefulWidget {
+class FishingEventListScreen extends StatelessWidget {
   const FishingEventListScreen({super.key});
 
   @override
-  FishingEventListScreenState createState() => FishingEventListScreenState();
-}
-
-class FishingEventListScreenState extends State<FishingEventListScreen> {
-  final TextEditingController _vesselIdController = TextEditingController();
-  final TextEditingController _startDateController = TextEditingController();
-  final TextEditingController _endDateController = TextEditingController();
-
-  DateTime? _selectedStartDate;
-  DateTime? _selectedEndDate;
-
-  late FishingEventViewModel _fishingEventViewModel;
-
-  @override
-  void initState() {
-    super.initState();
-    _fishingEventViewModel = FishingEventViewModel();
-  }
-
-  @override
-  void dispose() {
-    _vesselIdController.dispose();
-    _startDateController.dispose();
-    _endDateController.dispose();
-    _fishingEventViewModel.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<FishingEventViewModel>.value(
-      value: _fishingEventViewModel,
+    return PopScope(
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        // Check if the pop actually happened
+        if (didPop) {
+          // Clear fishing events after navigating back
+          context.read<FishingEventViewModel>().clearFishingEvents();
+        }
+      },
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Fishing Events List'),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.download),
+              onPressed: () {
+                // Manually load events from the database
+                context.read<FishingEventViewModel>().loadFishingEventsFromDatabase();
+              },
+            ),
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -56,36 +40,32 @@ class FishingEventListScreenState extends State<FishingEventListScreen> {
             children: <Widget>[
               // Vessel ID input
               TextField(
-                controller: _vesselIdController,
+                controller: TextEditingController(),
                 decoration: const InputDecoration(
                   labelText: 'Vessel ID',
                 ),
               ),
               // Start Date Picker Field
               DatePickerField(
-                controller: _startDateController,
+                controller: TextEditingController(),
                 labelText: 'Start Date (YYYY-MM-DD)',
                 firstDate: DateTime(2000),
-                lastDate: _selectedEndDate ?? DateTime.now(),
-                initialDate: _selectedStartDate,
+                lastDate: DateTime.now(),
+                initialDate: DateTime.now(),
                 onDateSelected: (DateTime date) {
-                  setState(() {
-                    _selectedStartDate = date;
-                  });
+                  // Date selection logic
                 },
                 key: const Key('startDateField'),
               ),
               // End Date Picker Field
               DatePickerField(
-                controller: _endDateController,
+                controller: TextEditingController(),
                 labelText: 'End Date (YYYY-MM-DD)',
-                firstDate: _selectedStartDate ?? DateTime(2000),
+                firstDate: DateTime(2000),
                 lastDate: DateTime.now(),
-                initialDate: _selectedEndDate,
+                initialDate: DateTime.now(),
                 onDateSelected: (DateTime date) {
-                  setState(() {
-                    _selectedEndDate = date;
-                  });
+                  // Date selection logic
                 },
                 key: const Key('endDateField'),
               ),
@@ -93,31 +73,12 @@ class FishingEventListScreenState extends State<FishingEventListScreen> {
               ElevatedButton(
                 onPressed: () {
                   // Fetch data when the button is pressed
-                  String vesselId = _vesselIdController.text.trim();
-                  String startDate = _startDateController.text.trim();
-                  String endDate = _endDateController.text.trim();
-
-                  // Input validation
-                  if (vesselId.isEmpty || startDate.isEmpty || endDate.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Please fill in all fields')),
-                    );
-                    return;
-                  }
-
-                  // Ensure start date is before end date
-                  if (_selectedStartDate != null &&
-                      _selectedEndDate != null &&
-                      _selectedStartDate!.isAfter(_selectedEndDate!)) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('Start date must be before end date')),
-                    );
-                    return;
-                  }
+                  String vesselId = ''; // Replace with actual input
+                  String startDate = ''; // Replace with actual input
+                  String endDate = ''; // Replace with actual input
 
                   // Fetch data
-                  _fishingEventViewModel.fetchFishingEvents(
+                  context.read<FishingEventViewModel>().fetchFishingEvents(
                     vesselId: vesselId,
                     startDate: startDate,
                     endDate: endDate,
@@ -133,8 +94,7 @@ class FishingEventListScreenState extends State<FishingEventListScreen> {
                       Widget? child) {
                     if (fishingEventViewModel.isLoading) {
                       return const AppLoading();
-                    } else if (fishingEventViewModel
-                        .fishingError.message.isNotEmpty) {
+                    } else if (fishingEventViewModel.fishingError.message.isNotEmpty) {
                       return AppError(
                         message: fishingEventViewModel.fishingError.message,
                       );

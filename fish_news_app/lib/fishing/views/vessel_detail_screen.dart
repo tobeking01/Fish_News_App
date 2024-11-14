@@ -1,5 +1,7 @@
+import 'package:fish_news_app/fishing/view_models/vessel_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fish_news_app/fishing/models/vessel_model.dart';
+import 'package:provider/provider.dart';
 
 class VesselDetailScreen extends StatelessWidget {
   final Vessel vessel;
@@ -27,6 +29,19 @@ class VesselDetailScreen extends StatelessWidget {
               Text('Length: ${vessel.length} meters'),
               Text('Tonnage: ${vessel.tonnage} GT'),
               Text('Gear Type: ${vessel.gearType}'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () async {
+                  // Add vessel to the database
+                  await context.read<VesselViewModel>().addVessel(vessel);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Vessel added to the database')),
+                    );
+                  }
+                },
+                child: const Text('Add to Database'),
+              ),
               const SizedBox(height: 16),
               if (vessel.owners.isNotEmpty)
                 Column(
