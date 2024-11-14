@@ -21,9 +21,8 @@ This app follows the MVVM (Model-View-ViewModel) architecture for cleaner code s
   - Global Fishing Watch API
   - MVVM architecture patterns
   - JSON serialization
-  - Realm for data storage
-  - Ktor for HTTP client requests
-  - Coil for image loading
+  - HTTPS
+  - Provider
 
 ## Getting Started
 
